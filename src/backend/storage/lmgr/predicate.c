@@ -4280,6 +4280,16 @@ CheckTargetForConflictsIn(PREDICATELOCKTARGETTAG *targettag)
 											 sxact->finishedBefore))
 				&& !RWConflictExists(sxact, MySerializableXact))
 			{
+				elog(WARNING, "Lock: Db %d Rel %d is_tuple %d is_page %d is_relation %d Me %d Other %d",
+					 GET_PREDICATELOCKTARGETTAG_DB(*targettag),
+					 targettag->locktag_field2,
+					 GET_PREDICATELOCKTARGETTAG_TYPE(*targettag) == PREDLOCKTAG_TUPLE,
+					 GET_PREDICATELOCKTARGETTAG_TYPE(*targettag) == PREDLOCKTAG_PAGE,
+					 GET_PREDICATELOCKTARGETTAG_TYPE(*targettag) == PREDLOCKTAG_RELATION,
+					 MySerializableXact->topXid,
+					 sxact->topXid
+					);
+				// Flag the transactions.
 				FlagRWConflict(sxact, MySerializableXact);
 			}
 
