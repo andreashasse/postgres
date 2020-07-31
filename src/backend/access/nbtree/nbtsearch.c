@@ -1370,6 +1370,10 @@ _bt_first(IndexScanDesc scan, ScanDirection dir)
 		return false;
 	}
 	else
+		//elog(WARNING, "nbtserarch 1373");
+		// BTreeTupleGetMaxHeapTID(itup)
+		// offnum
+		// TODO: Construct a ItemPointer by using blkno and offnum? or currItem?
 		PredicateLockPage(rel, BufferGetBlockNumber(buf),
 						  scan->xs_snapshot);
 
