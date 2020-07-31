@@ -2451,6 +2451,15 @@ PredicateLockAcquire(const PREDICATELOCKTARGETTAG *targettag)
 	if (CoarserLockCovers(targettag))
 		return;
 
+	elog(WARNING, "ALock: Db %d Rel %d is_tuple %d is_page %d is_relation %d",
+		 GET_PREDICATELOCKTARGETTAG_DB(*targettag),
+		 targettag->locktag_field2,
+		 GET_PREDICATELOCKTARGETTAG_TYPE(*targettag) == PREDLOCKTAG_TUPLE,
+		 GET_PREDICATELOCKTARGETTAG_TYPE(*targettag) == PREDLOCKTAG_PAGE,
+		 GET_PREDICATELOCKTARGETTAG_TYPE(*targettag) == PREDLOCKTAG_RELATION
+		);
+
+
 	/* the same hash and LW lock apply to the lock target and the local lock. */
 	targettaghash = PredicateLockTargetTagHashCode(targettag);
 
@@ -2531,6 +2540,13 @@ PredicateLockPage(Relation relation, BlockNumber blkno, Snapshot snapshot)
 									relation->rd_node.dbNode,
 									relation->rd_id,
 									blkno);
+	elog(WARNING, "PLock: Db %d Rel %d is_tuple %d is_page %d is_relation %d",
+		 GET_PREDICATELOCKTARGETTAG_DB(tag),
+		 tag.locktag_field2,
+		 GET_PREDICATELOCKTARGETTAG_TYPE(tag) == PREDLOCKTAG_TUPLE,
+		 GET_PREDICATELOCKTARGETTAG_TYPE(tag) == PREDLOCKTAG_PAGE,
+		 GET_PREDICATELOCKTARGETTAG_TYPE(tag) == PREDLOCKTAG_RELATION
+		);
 	PredicateLockAcquire(&tag);
 }
 
