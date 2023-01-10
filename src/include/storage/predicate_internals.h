@@ -395,6 +395,7 @@ typedef struct PredicateLockData
 } PredicateLockData;
 
 
+
 /*
  * These macros define how we map logical IDs of lockable objects into the
  * physical fields of PREDICATELOCKTARGETTAG.   Use these to set up values,

@@ -835,7 +835,8 @@ _bt_compare(Relation rel,
  *		the matching tuple(s) on the page has been loaded into so->currPos.
  *		scan->xs_ctup.t_self is set to the heap TID of the current tuple,
  *		and if requested, scan->xs_itup points to a copy of the index tuple.
- *
+ * Hmm, Should we lock all matching tuples?
+ * I think this is the place where page locks on index relations happens
  * If there are no matching items in the index, we return false, with no
  * pins or locks held.
  *
@@ -1999,6 +2000,7 @@ _bt_readnextpage(IndexScanDesc scan, BlockNumber blkno, ScanDirection dir)
 			/* check for deleted page */
 			if (!P_IGNORE(opaque))
 			{
+				//elog(WARNING, "nbtserarch 1998");
 				PredicateLockPage(rel, blkno, scan->xs_snapshot);
 				/* see if there are any matches on this page */
 				/* note that this will clear moreRight if we can stop */
@@ -2101,6 +2103,7 @@ _bt_readnextpage(IndexScanDesc scan, BlockNumber blkno, ScanDirection dir)
 			opaque = (BTPageOpaque) PageGetSpecialPointer(page);
 			if (!P_IGNORE(opaque))
 			{
+				//elog(WARNING, "nbtserarch 2102");
 				PredicateLockPage(rel, BufferGetBlockNumber(so->currPos.buf), scan->xs_snapshot);
 				/* see if there are any matches on this page */
 				/* note that this will clear moreLeft if we can stop */
@@ -2403,7 +2406,8 @@ _bt_endpoint(IndexScanDesc scan, ScanDirection dir)
 		BTScanPosInvalidate(so->currPos);
 		return false;
 	}
-
+	// here log
+	//elog(WARNING, "nbtserarch 2405");
 	PredicateLockPage(rel, BufferGetBlockNumber(buf), scan->xs_snapshot);
 	page = BufferGetPage(buf);
 	opaque = (BTPageOpaque) PageGetSpecialPointer(page);

@@ -49,7 +49,7 @@ typedef LockInfoData *LockInfo;
 /*
  * Here are the contents of a relation cache entry.
  */
-
+// Relation
 typedef struct RelationData
 {
 	RelFileNode rd_node;		/* relation physical identifier */

@@ -1917,6 +1917,7 @@ _bt_mark_page_halfdead(Relation rel, Buffer leafbuf, BTStack stack)
 	 * Any insert which would have gone on the leaf block will now go to its
 	 * right sibling.  In other words, the key space moves right.
 	 */
+	//elog(WARNING, "nbtpage 1920");
 	PredicateLockPageCombine(rel, leafblkno, leafrightsib);
 
 	/* No ereport(ERROR) until changes are logged */

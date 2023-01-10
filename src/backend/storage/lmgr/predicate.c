@@ -1858,6 +1858,7 @@ CreateLocalPredicateLockHash(void)
 	MemSet(&hash_ctl, 0, sizeof(hash_ctl));
 	hash_ctl.keysize = sizeof(PREDICATELOCKTARGETTAG);
 	hash_ctl.entrysize = sizeof(LOCALPREDICATELOCK);
+	// 11:04
 	LocalPredicateLockHash = hash_create("Local predicate lock",
 										 max_predicate_locks_per_xact,
 										 &hash_ctl,
@@ -2220,6 +2221,7 @@ MaxPredicateChildLocks(const PREDICATELOCKTARGETTAG *tag)
 				: max_predicate_locks_per_relation;
 
 		case PREDLOCKTAG_PAGE:
+			// Here
 			return max_predicate_locks_per_page;
 
 		case PREDLOCKTAG_TUPLE:
@@ -2382,6 +2384,7 @@ CreatePredicateLock(const PREDICATELOCKTARGETTAG *targettag,
 	PREDICATELOCK *lock;
 	LWLock	   *partitionLock;
 	bool		found;
+	// Create pred lock
 
 	partitionLock = PredicateLockHashPartitionLock(targettaghash);
 
@@ -2536,10 +2539,11 @@ PredicateLockPage(Relation relation, BlockNumber blkno, Snapshot snapshot)
 	if (!SerializationNeededForRead(relation, snapshot))
 		return;
 
-	SET_PREDICATELOCKTARGETTAG_PAGE(tag,
-									relation->rd_node.dbNode,
-									relation->rd_id,
-									blkno);
+	// THIS IS THE STUFF
+	/* SET_PREDICATELOCKTARGETTAG_TUPLE(tag, */
+	/* 								relation->rd_node.dbNode, */
+	/* 								relation->rd_id, */
+	/* 								blkno); */
 	elog(WARNING, "PLock: Db %d Rel %d is_tuple %d is_page %d is_relation %d",
 		 GET_PREDICATELOCKTARGETTAG_DB(tag),
 		 tag.locktag_field2,
@@ -4236,6 +4240,7 @@ CheckTargetForConflictsIn(PREDICATELOCKTARGETTAG *targettag)
 		return;
 	}
 
+	// HERE
 	/*
 	 * Each lock for an overlapping transaction represents a conflict: a
 	 * rw-dependency in to this transaction.
@@ -4260,6 +4265,7 @@ CheckTargetForConflictsIn(PREDICATELOCKTARGETTAG *targettag)
 		sxact = predlock->tag.myXact;
 		if (sxact == MySerializableXact)
 		{
+			// "conflict" with myself
 			/*
 			 * If we're getting a write lock on a tuple, we don't need a
 			 * predicate (SIREAD) lock on the same tuple. We can safely remove
@@ -4279,6 +4285,7 @@ CheckTargetForConflictsIn(PREDICATELOCKTARGETTAG *targettag)
 		}
 		else if (!SxactIsDoomed(sxact)
 				 && (!SxactIsCommitted(sxact)
+					 // less or equal?
 					 || TransactionIdPrecedes(GetTransactionSnapshot()->xmin,
 											  sxact->finishedBefore))
 				 && !RWConflictExists(sxact, MySerializableXact))
@@ -4658,6 +4665,7 @@ OnConflict_CheckForSerializationFailure(const SERIALIZABLEXACT *reader,
 	{
 		if (SxactHasSummaryConflictOut(writer))
 		{
+			// ignore
 			failure = true;
 			conflict = NULL;
 		}
